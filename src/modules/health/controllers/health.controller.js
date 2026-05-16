@@ -1,4 +1,4 @@
-const healthService = require('../services/health.service');
+import healthService from'../services/health.service.js';
 
 const checkHealth = (req, res) => {
     const response = healthService.getHealthStatus();
@@ -6,6 +6,6 @@ const checkHealth = (req, res) => {
     return res.status(200).json(response);
 };
 
-module.exports = {
-    checkHealth,
+export default {
+    checkHealth
 };

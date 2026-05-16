@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 
-const healthRoutes = require('./modules/health/routes/health.router');
+import healthRoutes from'./modules/health/routes/health.router.js';
 
 const app = express();
 
@@ -8,4 +8,4 @@ app.use(express.json());
 
 app.use('/api/v1/health', healthRoutes);
 
-module.exports = app;
+export default app;

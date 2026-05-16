@@ -5,6 +5,6 @@ const getHealthStatus = () => {
     };
 };
 
-module.exports = {
-    getHealthStatus,
+export default {
+    getHealthStatus
 };
