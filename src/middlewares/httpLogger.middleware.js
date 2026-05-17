@@ -5,17 +5,14 @@ import logger from '../utils/logger.js';
 const httpLogger = pinoHttp({
     logger,
 
-    customSuccessMessage: function (req, res) {
+    customSuccessMessage(req, res) {
         return `${req.method} ${req.url} completed with ${res.statusCode}`;
     },
 
-    customErrorMessage: function (req, res, error) {
-        return `${req.method} ${req.url} failed with ${res.statusCode}`;
-    },
+    customLogLevel(req, res, error) {
 
-    customLogLevel: function (req, res, error) {
         if (res.statusCode >= 500 || error) {
-            return 'error';
+            return 'silent';
         }
 
         if (res.statusCode >= 400) {
