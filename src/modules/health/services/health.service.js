@@ -1,3 +1,5 @@
+import AppError from "../../../utils/appError.js";
+
 const getHealthStatus = () => {
     return {
         success: true,
