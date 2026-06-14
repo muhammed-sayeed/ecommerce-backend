@@ -22,4 +22,14 @@ router.post(
   validate(registrationValidation.completeRegistrationSchema),
   authController.completeRegistration,
 );
+router.post(
+  "/login/send-otp",
+  validate(authValidation.sendOtpSchema),
+  authController.sendLoginOtp,
+);
+router.post(
+  "/login/verify-otp",
+  validate(authValidation.verifyOtpSchema),
+  authController.verifyLoginOtp,
+);
 export default router;

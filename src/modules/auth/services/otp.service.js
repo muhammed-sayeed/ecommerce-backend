@@ -141,7 +141,60 @@ const verifyRegistrationOtp = async (mobile, otp) => {
   };
 };
 
+const sendLoginOtp = async (mobile) => {
+  const user = await authRepository.findUserByMobile(mobile);
+
+  if (!user) {
+    throw new AppError(
+      "User not found. Please register.",
+      HTTP_STATUS.NOT_FOUND,
+    );
+  }
+
+  return sendOtp(mobile);
+};
+
+const verifyLoginOtp = async (mobile, otp) => {
+  const user = await authRepository.findUserByMobile(mobile);
+
+  if (!user) {
+    throw new AppError("User not found.", HTTP_STATUS.NOT_FOUND);
+  }
+
+  await validateOtp(mobile, otp);
+
+  const payload = {
+    userId: user.id,
+    role: user.role,
+  };
+
+  const accessToken = generateAccessToken(payload);
+
+  const refreshToken = generateRefreshToken(payload);
+
+  const hashedRefreshToken = hashToken(refreshToken);
+
+  await authRepository.updateRefreshToken(user.id, hashedRefreshToken);
+
+  await clearOtpSession(mobile);
+
+  return {
+    user: {
+      id: user.id,
+      mobile: user.mobile,
+      firstName: user.firstName,
+      email: user.email,
+      role: user.role,
+    },
+
+    accessToken,
+    refreshToken,
+  };
+};
+
 export default {
   sendOtp,
   verifyRegistrationOtp,
+  sendLoginOtp,
+  verifyLoginOtp
 };

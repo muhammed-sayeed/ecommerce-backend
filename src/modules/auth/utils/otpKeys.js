@@ -13,6 +13,9 @@ const otpKeys = {
   registrationSession(mobile) {
     return `register:verified:${mobile}`;
   },
+  loginSession(mobile) {
+    return `login:verified:${mobile}`;
+  },
 };
 
 export default otpKeys;

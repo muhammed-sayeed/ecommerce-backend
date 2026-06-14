@@ -47,8 +47,42 @@ const completeRegistration = asyncHandler(async (req, res) => {
   });
 });
 
+const sendLoginOtp = asyncHandler(async (req, res) => {
+  const { mobile } = req.body;
+
+  const result = await otpService.sendLoginOtp(mobile);
+
+  return sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+
+    success: true,
+
+    message: result.message,
+
+    data: null,
+  });
+});
+
+const verifyLoginOtp = asyncHandler(async (req, res) => {
+  const { mobile, otp } = req.body;
+
+  const result = await otpService.verifyLoginOtp(mobile, otp);
+
+  return sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+
+    success: true,
+
+    message: "Login successful",
+
+    data: result,
+  });
+});
+
 export default {
   sendOtp,
   verifyOtp,
-  completeRegistration
+  completeRegistration,
+  sendLoginOtp,
+  verifyLoginOtp,
 };
