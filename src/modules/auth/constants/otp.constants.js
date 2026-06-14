@@ -1,0 +1,11 @@
+const OTP_CONFIG = {
+    LENGTH: 6,
+
+    EXPIRY_SECONDS: 300, 
+
+    RESEND_COOLDOWN_SECONDS: 60,
+
+    MAX_ATTEMPTS: 5,
+};
+
+export default OTP_CONFIG;
