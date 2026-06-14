@@ -11,6 +11,8 @@ import authRepository from "../../auth/repositories/auth.repository.js";
 import generateAccessToken from "../utils/generateAccessToken.js";
 import generateRefreshToken from "../utils/generateRefreshToken.js";
 import hashToken from "../utils/hashToken.js";
+import validateOtp from "../utils/validateOtp.js";
+import clearOtpSession from "../helpers/clearOtpSession.js";
 
 const sendOtp = async (mobile) => {
   const cooldownKey = otpKeys.cooldown(mobile);
@@ -52,71 +54,94 @@ const sendOtp = async (mobile) => {
   };
 };
 
-const verifyOtp = async (mobile, otp) => {
-  const otpKey = otpKeys.otp(mobile);
+// const verifyOtp = async (mobile, otp) => {
+//   const otpKey = otpKeys.otp(mobile);
 
-  const attemptsKey = otpKeys.attempts(mobile);
+//   const attemptsKey = otpKeys.attempts(mobile);
 
-  const storedOtpHash = await redisClient.get(otpKey);
+//   const storedOtpHash = await redisClient.get(otpKey);
 
-  if (!storedOtpHash) {
-    throw new AppError("OTP expired or invalid", HTTP_STATUS.BAD_REQUEST);
+//   if (!storedOtpHash) {
+//     throw new AppError("OTP expired or invalid", HTTP_STATUS.BAD_REQUEST);
+//   }
+
+//   const isValidOtp = compareOtp(otp, storedOtpHash);
+
+//   if (!isValidOtp) {
+//     const attempts = Number(await redisClient.incr(attemptsKey));
+
+//     if (attempts >= OTP_CONFIG.MAX_ATTEMPTS) {
+//       await redisClient.del(otpKey, attemptsKey, otpKeys.cooldown(mobile));
+
+//       throw new AppError(
+//         "Maximum OTP attempts exceeded",
+//         HTTP_STATUS.TOO_MANY_REQUESTS,
+//       );
+//     }
+
+//     throw new AppError("Invalid OTP", HTTP_STATUS.BAD_REQUEST);
+//   }
+
+//   let user = await authRepository.findUserByMobile(mobile);
+
+//   if (!user) {
+//     user = await authRepository.createUser(mobile);
+//   }
+
+//   const payload = {
+//     userId: user.id,
+//     role: user.role,
+//   };
+
+//   const accessToken = generateAccessToken(payload);
+
+//   const refreshToken = generateRefreshToken(payload);
+
+//   const hashedRefreshToken = hashToken(refreshToken);
+
+//   await authRepository.updateRefreshToken(user.id, hashedRefreshToken);
+
+//   await redisClient.del(otpKey, attemptsKey, otpKeys.cooldown(mobile));
+
+//   return {
+//     isNewUser: !user.email,
+
+//     user: {
+//       id: user.id,
+//       mobile: user.mobile,
+//       email: user.email,
+//       role: user.role,
+//     },
+
+//     accessToken,
+//     refreshToken,
+//   };
+// };
+
+const verifyRegistrationOtp = async (mobile, otp) => {
+  const existingUser = await authRepository.findUserByMobile(mobile);
+
+  if (existingUser) {
+    throw new AppError(
+      "User already exists. Please login.",
+      HTTP_STATUS.CONFLICT,
+    );
   }
 
-  const isValidOtp = compareOtp(otp, storedOtpHash);
+  await validateOtp(mobile, otp);
 
-  if (!isValidOtp) {
-    const attempts = Number(await redisClient.incr(attemptsKey));
+  await redisClient.set(otpKeys.registrationSession(mobile), "verified", {
+    EX: OTP_CONFIG.REGISTRATION_SESSION_EXPIRY_SECONDS,
+  });
 
-    if (attempts >= OTP_CONFIG.MAX_ATTEMPTS) {
-      await redisClient.del(otpKey, attemptsKey, otpKeys.cooldown(mobile));
-
-      throw new AppError(
-        "Maximum OTP attempts exceeded",
-        HTTP_STATUS.TOO_MANY_REQUESTS,
-      );
-    }
-
-    throw new AppError("Invalid OTP", HTTP_STATUS.BAD_REQUEST);
-  }
-
-  let user = await authRepository.findUserByMobile(mobile);
-
-  if (!user) {
-    user = await authRepository.createUser(mobile);
-  }
-
-  const payload = {
-    userId: user.id,
-    role: user.role,
-  };
-
-  const accessToken = generateAccessToken(payload);
-
-  const refreshToken = generateRefreshToken(payload);
-
-  const hashedRefreshToken = hashToken(refreshToken);
-
-  await authRepository.updateRefreshToken(user.id, hashedRefreshToken);
-
-  await redisClient.del(otpKey, attemptsKey, otpKeys.cooldown(mobile));
+  await clearOtpSession(mobile);
 
   return {
-    isNewUser: !user.email,
-
-    user: {
-      id: user.id,
-      mobile: user.mobile,
-      email: user.email,
-      role: user.role,
-    },
-
-    accessToken,
-    refreshToken,
+    registrationVerified: true,
   };
 };
 
 export default {
   sendOtp,
-  verifyOtp
+  verifyRegistrationOtp,
 };

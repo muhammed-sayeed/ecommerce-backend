@@ -3,6 +3,7 @@ import express from "express";
 import authController from "../controllers/auth.controller.js";
 import validate from "../../../middlewares/validate.middleware.js";
 import authValidation from "../validations/auth.validation.js";
+import registrationValidation from "../validations/registration.validation.js";
 
 const router = express.Router();
 
@@ -12,8 +13,13 @@ router.post(
   authController.sendOtp,
 );
 router.post(
-  "/mobile/verify-otp",
+  "/register/verify-otp",
   validate(authValidation.verifyOtpSchema),
   authController.verifyOtp,
+);
+router.post(
+  "/register/complete",
+  validate(registrationValidation.completeRegistrationSchema),
+  authController.completeRegistration,
 );
 export default router;

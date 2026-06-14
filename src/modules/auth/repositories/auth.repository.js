@@ -6,12 +6,9 @@ const findUserByMobile = async (mobile) => {
   });
 };
 
-const createUser = async (mobile) => {
+const createUser = async (data) => {
   return prisma.user.create({
-    data: {
-      mobile,
-      isMobileVerified: true,
-    },
+      data
   });
 };
 
