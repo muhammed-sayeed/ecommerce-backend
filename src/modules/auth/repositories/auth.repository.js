@@ -8,7 +8,7 @@ const findUserByMobile = async (mobile) => {
 
 const createUser = async (data) => {
   return prisma.user.create({
-      data
+    data,
   });
 };
 
@@ -23,8 +23,18 @@ const updateRefreshToken = async (userId, refreshToken) => {
     },
   });
 };
+
+const findUserById = async (userId) => {
+  return prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+};
+
 export default {
-    createUser,
-    findUserByMobile,
-    updateRefreshToken
-}
+  createUser,
+  findUserByMobile,
+  updateRefreshToken,
+  findUserById
+};

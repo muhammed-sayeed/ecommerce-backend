@@ -3,6 +3,8 @@ import asyncHandler from "../../../utils/asyncHandler.js";
 import sendResponse from "../../../utils/sendResponse.js";
 import otpService from "../services/otp.service.js";
 import registrationService from "../services/registration.service.js";
+import tokenService from "../services/token.service.js";
+import logoutService from "../services/logout.service.js";
 
 const sendOtp = asyncHandler(async (req, res) => {
   const { mobile } = req.body;
@@ -79,10 +81,41 @@ const verifyLoginOtp = asyncHandler(async (req, res) => {
   });
 });
 
+const refreshToken = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+
+  const result = await tokenService.refreshToken(refreshToken);
+
+  return sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+
+    success: true,
+
+    message: "Token refreshed successfully",
+
+    data: result,
+  });
+});
+
+const logout = asyncHandler(async (req, res) => {
+  await logoutService.logout(req.user.id);
+
+  return sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+
+    success: true,
+    message: "Logout successful",
+    data: null,
+
+  });
+});
+
 export default {
   sendOtp,
   verifyOtp,
   completeRegistration,
   sendLoginOtp,
   verifyLoginOtp,
+  refreshToken,
+  logout
 };
