@@ -7,15 +7,22 @@ import globalErrorHandler from './middlewares/error.middleware.js';
 import notFound from './middlewares/notFound.middleware.js';
 import httpLogger from './middlewares/httpLogger.middleware.js';
 import authRoutes from './modules/auth/routes/auth.module.routes.js';
+import securityConfig from './configs/security.config.js';
+import globalLimiter from './middlewares/rateLimit/globalLimit.js';
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet(
+    securityConfig.helmet
+));
+
 app.use(
     cors({
         origin:'*'
     })
 );
+
+app.use(globalLimiter);
 
 app.use(httpLogger);
 
