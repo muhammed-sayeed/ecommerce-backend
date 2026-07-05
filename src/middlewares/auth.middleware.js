@@ -1,8 +1,8 @@
-import appConfig from "../../../configs/app.config.js";
-import HTTP_STATUS from "../../../constants/httpStatus.js";
-import AppError from "../../../utils/appError.js";
-import authRepository from "../repositories/auth.repository.js";
-import verifyToken from "../utils/verifyToken.js";
+import appConfig from "../configs/app.config.js";
+import HTTP_STATUS from "../constants/httpStatus.js";
+import AppError from "../utils/appError.js";
+import authRepository from "../modules/auth/repositories/auth.repository.js";
+import verifyToken from "../modules/auth/utils/verifyToken.js";
 
 
 const authMiddleware = async (req, res, next) => {

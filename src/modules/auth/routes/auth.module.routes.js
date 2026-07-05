@@ -4,7 +4,7 @@ import authController from "../controllers/auth.controller.js";
 import validate from "../../../middlewares/validate.middleware.js";
 import authValidation from "../validations/auth.validation.js";
 import registrationValidation from "../validations/registration.validation.js";
-import authMiddleware from "../middlewares/auth.middleware.js";
+import authMiddleware from "../../../middlewares/auth.middleware.js";
 import authLimiter from "../../../middlewares/rateLimit/authLimit.js";
 
 const router = express.Router();
