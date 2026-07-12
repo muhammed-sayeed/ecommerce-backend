@@ -12,6 +12,18 @@ class UserService {
 
     return user;
   }
+
+  async updateProfile(userId, data) {
+    const allowedData = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+    };
+
+    const updatedUser = await userRepository.updateById(userId, allowedData);
+
+    return updatedUser;
+  }
 }
 
 export default new UserService();

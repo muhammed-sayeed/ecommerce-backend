@@ -16,15 +16,28 @@ class UserRepository {
         isMobileVerified: true,
         isEmailVerified: true,
         createdAt: true,
-        isActive: true
+        isActive: true,
       },
     });
   }
 
-  async update(id, data) {
+  async updateById(id, data) {
     return prisma.user.update({
-      where: { id },
+      where: {
+        id,
+      },
+
       data,
+
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        mobile: true,
+        role: true,
+        updatedAt: true,
+      },
     });
   }
 }

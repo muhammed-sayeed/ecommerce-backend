@@ -1,36 +1,32 @@
-import { ZodError } from 'zod';
+import { ZodError } from "zod";
 
 const validate = (schema) => {
-    return async (req, res, next) => {
-        try {
+  return async (req, res, next) => {
+    try {
+      const validatedData = await schema.parseAsync({
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
 
-            await schema.parseAsync({
-                body: req.body,
-                query: req.query,
-                params: req.params,
-            });
+      req.body = validatedData.body;
 
-            next();
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: error.issues.map((issue) => ({
+            field: issue.path.slice(1).join("."),
+            message: issue.message,
+          })),
+        });
+      }
 
-        } catch (error) {
-
-            if (error instanceof ZodError) {
-
-                return res.status(400).json({
-                    success: false,
-                    message: 'Validation failed',
-                    errors: error.errors.map((err) => ({
-                        field: err.path.join('.'),
-                        message: err.message,
-                    })),
-                });
-
-            }
-
-            next(error);
-
-        }
-    };
+      next(error);
+    }
+  };
 };
 
 export default validate;

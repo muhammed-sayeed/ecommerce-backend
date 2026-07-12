@@ -11,7 +11,6 @@ model User {
   id                 Int       @id @default(autoincrement())
 
   mobile             String    @unique
-
   email              String?   @unique
 
   firstName          String
@@ -20,18 +19,57 @@ model User {
   role               UserRole  @default(USER)
 
   isMobileVerified   Boolean   @default(true)
-
   isEmailVerified    Boolean   @default(false)
 
   isActive           Boolean   @default(true)
 
   refreshToken       String?
 
+  addresses          Address[]
+
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+}
+
+model Address {
+  id            Int         @id @default(autoincrement())
+
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  label         String?
+
+  fullName      String
+  mobile        String
+
+  addressLine1  String
+  addressLine2  String?
+
+  city          String
+  state         String
+  postalCode    String
+  country       String      @default("India")
+
+  landmark      String?
+
+  addressType   AddressType @default(HOME)
+
+  isDefault     Boolean     @default(false)
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([userId, isDefault])
 }
 
 enum UserRole {
   USER
   ADMIN
+}
+
+enum AddressType {
+  HOME
+  WORK
+  OTHER
 }
