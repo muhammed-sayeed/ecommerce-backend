@@ -1,6 +1,9 @@
 import otpKeys from "./otpKeys.js";
 import redisClient from "../../../configs/redis.config.js";
 import compareOtp from "./compareOtp.js";
+import OTP_CONFIG from "../constants/otp.constants.js";
+import AppError from "../../../utils/appError.js";
+import HTTP_STATUS from "../../../constants/httpStatus.js";
 
 const validateOtp = async (mobile, otp) => {
   const otpKey = otpKeys.otp(mobile);

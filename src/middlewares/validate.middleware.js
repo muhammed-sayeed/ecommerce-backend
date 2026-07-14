@@ -11,6 +11,11 @@ const validate = (schema) => {
 
       req.body = validatedData.body;
 
+      req.validated = {
+        params: validatedData.params,
+        query: validatedData.query,
+      };
+
       next();
     } catch (error) {
       if (error instanceof ZodError) {

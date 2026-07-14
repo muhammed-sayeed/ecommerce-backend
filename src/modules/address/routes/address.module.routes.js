@@ -13,4 +13,34 @@ router.post(
   validate(addressValidation.createAddressSchema),
   addressController.createAddress,
 );
+
+router.get("/", authMiddleware, addressController.getAddresses);
+
+router.get(
+  "/:id",
+  authMiddleware,
+  validate(addressValidation.getAddressSchema),
+  addressController.getAddress,
+);
+
+router.patch(
+  "/:id",
+  authMiddleware,
+  validate(addressValidation.updateAddressSchema),
+  addressController.updateAddress,
+);
+
+router.patch(
+  "/:id/default",
+  authMiddleware,
+  validate(addressValidation.setDefaultAddressSchema),
+  addressController.setDefaultAddress,
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  validate(addressValidation.setDefaultAddressSchema),
+  addressController.deleteAddress,
+);
 export default router;
