@@ -1,6 +1,8 @@
 import express from "express";
+import { UserRole } from "@prisma/client";
 
 import authMiddleware from "../../../middlewares/auth.middleware.js";
+import authorize from "../../../middlewares/authorize.middleware.js";
 import validate from "../../../middlewares/validate.middleware.js";
 import addressValidation from "../validations/address.validation.js";
 import addressController from "../controllers/address.controller.js";

@@ -36,7 +36,6 @@ const authMiddleware = async (req, res, next) => {
     if (!user) {
       throw new AppError("User not found", HTTP_STATUS.UNAUTHORIZED);
     }
-    console.log('user', user);
     if (!user.isActive) {
       throw new AppError("Account is suspended", HTTP_STATUS.FORBIDDEN);
     }
