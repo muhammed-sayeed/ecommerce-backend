@@ -25,6 +25,7 @@
     "prisma": "^6.19.3",
     "rate-limit-redis": "^5.0.0",
     "redis": "^5.12.1",
+    "slugify": "^1.6.9",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -64,27 +64,23 @@ model Address {
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
 
-  name        String    @unique
-  slug        String    @unique
+  name          String    @unique
+  slug          String    @unique
 
-  description String?
+  description   String?
 
-  image       String?
+  image         String?
 
-  sortOrder   Int       @default(0)
+  displayOrder  Int       @default(0)
 
-  isActive    Boolean   @default(true)
+  isActive      Boolean   @default(true)
 
-  deletedAt   DateTime?
+  deletedAt     DateTime?
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@index([isActive])
-  @@index([deletedAt])
-  @@index([sortOrder])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 enum UserRole {
