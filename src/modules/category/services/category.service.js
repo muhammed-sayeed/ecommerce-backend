@@ -1,9 +1,9 @@
 import slugify from "slugify";
 
 import categoryRepository from "../repositories/category.repository.js";
-
-import { AppError } from "../../../utils/appError.js";
-import { HTTP_STATUS } from "../../../constants/httpStatus.js";
+import AppError from "../../../utils/appError.js";
+import HTTP_STATUS from "../../../constants/httpStatus.js";
+import generateSlug from "../../../utils/slug.js";
 
 const createCategory = async (data) => {
   const normalizedName = data.name.trim();
@@ -14,11 +14,7 @@ const createCategory = async (data) => {
     throw new AppError("Category already exists", HTTP_STATUS.CONFLICT);
   }
 
-  const slug = slugify(normalizedName, {
-    lower: true,
-    strict: true,
-    trim: true,
-  });
+  const slug = generateSlug(normalizedName);
 
   return categoryRepository.create({
     ...data,

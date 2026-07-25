@@ -21,8 +21,11 @@ const createCategory = async (req, res, next) => {
 const getAllCategories = async (req, res, next) => {
   try {
     const categories = await categoryService.getAllCategories();
-
-    return successResponse(res, categories, "Categories fetched successfully");
+    console.log("category", categories);
+    return successResponse(res, {
+      message: "Categories fetched successfully",
+      data: categories,
+    });
   } catch (error) {
     next(error);
   }
@@ -30,7 +33,7 @@ const getAllCategories = async (req, res, next) => {
 
 const getCategoryById = async (req, res, next) => {
   try {
-    const category = await categoryService.getCategoryById(req.params.id);
+    const category = await categoryService.getCategoryById(req.validated.params.id);
 
     return successResponse(res, category, "Category fetched successfully");
   } catch (error) {
@@ -41,7 +44,7 @@ const getCategoryById = async (req, res, next) => {
 const updateCategory = async (req, res, next) => {
   try {
     const category = await categoryService.updateCategory(
-      req.params.id,
+      req.validated.params.id,
       req.body,
     );
 
@@ -53,7 +56,7 @@ const updateCategory = async (req, res, next) => {
 
 const deleteCategory = async (req, res, next) => {
   try {
-    await categoryService.deleteCategory(req.params.id);
+    await categoryService.deleteCategory(req.validated.params.id);
 
     return successResponse(res, null, "Category deleted successfully");
   } catch (error) {
