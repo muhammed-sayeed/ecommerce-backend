@@ -21,7 +21,6 @@ const createCategory = async (req, res, next) => {
 const getAllCategories = async (req, res, next) => {
   try {
     const categories = await categoryService.getAllCategories();
-    console.log("category", categories);
     return successResponse(res, {
       message: "Categories fetched successfully",
       data: categories,
