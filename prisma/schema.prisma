@@ -63,6 +63,26 @@ model Address {
   @@index([userId, isDefault])
 }
 
+model Category {
+  id            Int       @id @default(autoincrement())
+
+  name          String    @unique
+  slug          String    @unique
+
+  description   String?
+
+  image         String?
+
+  displayOrder  Int       @default(0)
+
+  isActive      Boolean   @default(true)
+
+  deletedAt     DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
 enum UserRole {
   USER
   ADMIN

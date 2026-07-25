@@ -3,91 +3,95 @@ import AppError from "../../../utils/appError.js";
 import HTTP_STATUS from "../../../constants/httpStatus.js";
 import addressRepository from "../repositories/address.repository.js";
 
-class AddressService {
-  async getOwnedAddress(userId, addressId) {
-    const address = await addressRepository.findById(userId, addressId);
+const getOwnedAddress = async (userId, addressId) => {
+  const address = await addressRepository.findById(userId, addressId);
 
-    if (!address) {
-      throw new AppError("Address not found", HTTP_STATUS.NOT_FOUND);
-    }
-
-    return address;
+  if (!address) {
+    throw new AppError("Address not found", HTTP_STATUS.NOT_FOUND);
   }
 
-  async createAddress(userId, data) {
-    const addressCount = await addressRepository.countByUserId(userId);
+  return address;
+};
 
-    let isDefault = data.isDefault ?? false;
+const createAddress = async (userId, data) => {
+  const addressCount = await addressRepository.countByUserId(userId);
 
-    if (addressCount === 0) {
-      isDefault = true;
-    }
+  let isDefault = data.isDefault ?? false;
 
-    return prisma.$transaction(async (tx) => {
-      if (isDefault) {
-        await addressRepository.clearDefaultByUserId(userId, tx);
-      }
-
-      return addressRepository.create(
-        {
-          ...data,
-          userId,
-          isDefault,
-        },
-        tx,
-      );
-    });
+  if (addressCount === 0) {
+    isDefault = true;
   }
 
-  async getAddresses(userId) {
-    return await addressRepository.findAllByUserId(userId);
-  }
-
-  async getAddress(userId, addressId) {
-    const address = await this.getOwnedAddress(userId, addressId);
-
-    return address;
-  }
-
-  async updateAddress(userId, addressId, data) {
-    const address = await this.getOwnedAddress(userId, addressId);
-
-    return addressRepository.update(addressId, data);
-  }
-
-  async setDefaultAddress(userId, addressId) {
-    const address = await athis.getOwnedAddress(userId, addressId);
-
-    if (address.isDefault) {
-      return address;
-    }
-
-    return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx) => {
+    if (isDefault) {
       await addressRepository.clearDefaultByUserId(userId, tx);
-
-      return addressRepository.setDefault(addressId, tx);
-    });
-  }
-
-  async deleteAddress(userId, addressId) {
-    const address = await this.getOwnedAddress(userId, addressId);
-
-    if (!address.isDefault) {
-      await addressRepository.delete(addressId);
-
-      return;
     }
 
-    await prisma.$transaction(async (tx) => {
-      await addressRepository.delete(addressId, tx);
+    return addressRepository.create(
+      {
+        ...data,
+        userId,
+        isDefault,
+      },
+      tx
+    );
+  });
+};
 
-      const nextAddress = await addressRepository.findFirstByUserId(userId, tx);
+const getAddresses = async (userId) => {
+  return addressRepository.findAllByUserId(userId);
+};
 
-      if (nextAddress) {
-        await addressRepository.setDefault(nextAddress.id, tx);
-      }
-    });
+const getAddress = async (userId, addressId) => {
+  return getOwnedAddress(userId, addressId);
+};
+
+const updateAddress = async (userId, addressId, data) => {
+  await getOwnedAddress(userId, addressId);
+
+  return addressRepository.update(addressId, data);
+};
+
+const setDefaultAddress = async (userId, addressId) => {
+  const address = await getOwnedAddress(userId, addressId);
+
+  if (address.isDefault) {
+    return address;
   }
-}
 
-export default new AddressService();
+  return prisma.$transaction(async (tx) => {
+    await addressRepository.clearDefaultByUserId(userId, tx);
+
+    return addressRepository.setDefault(addressId, tx);
+  });
+};
+
+const deleteAddress = async (userId, addressId) => {
+  const address = await getOwnedAddress(userId, addressId);
+
+  if (!address.isDefault) {
+    await addressRepository.remove(addressId);
+
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await addressRepository.remove(addressId, tx);
+
+    const nextAddress = await addressRepository.findFirstByUserId(userId, tx);
+
+    if (nextAddress) {
+      await addressRepository.setDefault(nextAddress.id, tx);
+    }
+  });
+};
+
+export default {
+  getOwnedAddress,
+  createAddress,
+  getAddresses,
+  getAddress,
+  updateAddress,
+  setDefaultAddress,
+  deleteAddress,
+};
