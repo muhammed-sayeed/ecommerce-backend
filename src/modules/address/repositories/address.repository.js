@@ -1,104 +1,110 @@
 import prisma from "../../../configs/prisma.config.js";
 import ADDRESS_SELECT from "../constants/address.select.js";
 
-class AddressRepository {
-  async countByUserId(userId) {
-    return prisma.address.count({
-      where: {
-        userId,
-      },
-    });
-  }
+const countByUserId = async (userId) => {
+  return prisma.address.count({
+    where: {
+      userId,
+    },
+  });
+};
 
-  async clearDefaultByUserId(userId, tx = prisma) {
-    return tx.address.updateMany({
-      where: {
-        userId,
-        isDefault: true,
-      },
-      data: {
-        isDefault: false,
-      },
-    });
-  }
+const clearDefaultByUserId = async (userId, tx = prisma) => {
+  return tx.address.updateMany({
+    where: {
+      userId,
+      isDefault: true,
+    },
+    data: {
+      isDefault: false,
+    },
+  });
+};
 
-  async create(data, tx = prisma) {
-    return tx.address.create({
-      data,
-      select: ADDRESS_SELECT,
-    });
-  }
+const create = async (data, tx = prisma) => {
+  return tx.address.create({
+    data,
+    select: ADDRESS_SELECT,
+  });
+};
 
-  async findAllByUserId(userId) {
-    return prisma.address.findMany({
-      where: {
-        userId,
+const findAllByUserId = async (userId) => {
+  return prisma.address.findMany({
+    where: {
+      userId,
+    },
+    orderBy: [
+      {
+        isDefault: "desc",
       },
-
-      orderBy: [
-        {
-          isDefault: "desc",
-        },
-        {
-          createdAt: "desc",
-        },
-      ],
-
-      select: ADDRESS_SELECT,
-    });
-  }
-
-  async findById(userId, addressId) {
-    return prisma.address.findFirst({
-      where: {
-        id: addressId,
-        userId,
+      {
+        createdAt: "desc",
       },
-      select: ADDRESS_SELECT,
-    });
-  }
+    ],
+    select: ADDRESS_SELECT,
+  });
+};
 
-  async update(id, data) {
-    return prisma.address.update({
-      where: {
-        id,
-      },
-      data,
-      select: ADDRESS_SELECT,
-    });
-  }
+const findById = async (userId, addressId) => {
+  return prisma.address.findFirst({
+    where: {
+      id: addressId,
+      userId,
+    },
+    select: ADDRESS_SELECT,
+  });
+};
 
-  async setDefault(id, tx = prisma) {
-    return tx.address.update({
-      where: {
-        id,
-      },
-      data: {
-        isDefault: true,
-      },
-      select: ADDRESS_SELECT,
-    });
-  }
+const update = async (id, data) => {
+  return prisma.address.update({
+    where: {
+      id,
+    },
+    data,
+    select: ADDRESS_SELECT,
+  });
+};
 
-  async delete(id, tx = prisma) {
-    return tx.address.delete({
-      where: {
-        id,
-      },
-    });
-  }
+const setDefault = async (id, tx = prisma) => {
+  return tx.address.update({
+    where: {
+      id,
+    },
+    data: {
+      isDefault: true,
+    },
+    select: ADDRESS_SELECT,
+  });
+};
 
-  async findFirstByUserId(userId, tx = prisma) {
-    return tx.address.findFirst({
-      where: {
-        userId,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      select: ADDRESS_SELECT,
-    });
-  }
-}
+const remove = async (id, tx = prisma) => {
+  return tx.address.delete({
+    where: {
+      id,
+    },
+  });
+};
 
-export default new AddressRepository();
+const findFirstByUserId = async (userId, tx = prisma) => {
+  return tx.address.findFirst({
+    where: {
+      userId,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+    select: ADDRESS_SELECT,
+  });
+};
+
+export default {
+  countByUserId,
+  clearDefaultByUserId,
+  create,
+  findAllByUserId,
+  findById,
+  update,
+  setDefault,
+  remove,
+  findFirstByUserId,
+};
